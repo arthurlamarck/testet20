@@ -201,10 +201,21 @@ function rolar(){
   header.appendChild(chk);
 
   // ===== DETALHES =====
-  let detalhes = document.createElement("div");
-  detalhes.className = "detalhes";
-  detalhes.innerText = detalhesTxt;
-  detalhes.style.display = "none";
+  let detalhes = `
+  d20: ${d20}
+  Ataque Total: ${atkTotal}
+  
+  Dano Base: ${dados}d${faces} ${critico ? "x"+arma.mult : ""}
+  Marca: ${marca}
+  Grande: ${grande}
+  Último Sangue: ${ultimo}
+  
+  Bônus: ${bonus}
+  
+  TOTAL: ${total}
+  `;
+  
+  addHistorico(ataque, total, critico, detalhes);
 
   // toggle
   header.onclick = () => {
