@@ -194,50 +194,19 @@ button[onclick="rolar()"]:hover {
 #historico {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   margin-top: 10px;
 }
 
-/* ITEM */
-.roll {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px;
-  border: 1px solid #3c3c3c;
-  background: #1e1e1e;
-  font-family: Consolas, monospace;
-}
-
-/* CRÍTICO */
-.roll.crit {
-  background: #5a0000;
-  border-color: #aa0000;
-  color: #fff;
-  font-weight: bold;
-}
-
-/* CHECKBOX HISTÓRICO */
-.roll input {
-  width: 14px;
-  height: 14px;
-}
-
-/* ===== TOTAL ===== */
-#total {
-  font-size: 14px;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #4fc1ff;
-}
-
+/* CONTAINER */
 .roll-container {
   border: 1px solid #3c3c3c;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
+  transition: all 0.15s ease;
 }
 
-/* HEADER */
+/* HEADER (linha principal) */
 .roll {
   display: flex;
   justify-content: space-between;
@@ -245,15 +214,29 @@ button[onclick="rolar()"]:hover {
   padding: 6px 8px;
   cursor: pointer;
   background: #1e1e1e;
+  font-family: Consolas, monospace;
 }
 
-/* DETALHES */
+/* HOVER */
+.roll:hover {
+  background: #2a2a2a;
+}
+
+/* CHECKBOX */
+.roll input {
+  width: 14px;
+  height: 14px;
+}
+
+/* DETALHES (expandido) */
 .detalhes {
   padding: 8px;
   background: #252526;
   font-size: 12px;
   white-space: pre-line;
   border-top: 1px solid #3c3c3c;
+
+  animation: expandFade 0.2s ease;
 }
 
 /* CRÍTICO */
@@ -267,3 +250,22 @@ button[onclick="rolar()"]:hover {
   background: #3a0000;
 }
 
+/* ===== TOTAL ===== */
+#total {
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #4fc1ff;
+}
+
+/* ===== ANIMAÇÃO ===== */
+@keyframes expandFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
