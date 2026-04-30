@@ -300,26 +300,28 @@ function animarD20(resultado, critico, falha){
 
   const el = document.getElementById("d20");
 
-  let count = 0;
   el.classList.remove("crit", "fail");
+
+  // começa animação
   el.classList.add("rolling");
 
-  const interval = setInterval(() => {
+  let fake = setInterval(()=>{
     el.innerText = Math.floor(Math.random()*20)+1;
-    count++;
+  }, 50);
 
-    if(count > 10){ // duração da animação
-      clearInterval(interval);
+  setTimeout(() => {
+    clearInterval(fake);
 
-      el.classList.remove("rolling");
-      el.innerText = resultado;
+    el.classList.remove("rolling");
 
-      if(critico){
-        el.classList.add("crit");
-      } else if(falha){
-        el.classList.add("fail");
-      }
+    // resultado real
+    el.innerText = resultado;
+
+    if(critico){
+      el.classList.add("crit");
+    } else if(falha){
+      el.classList.add("fail");
     }
 
-  }, 50); // velocidade
+  }, 600); //tempo igual do css
 }
