@@ -1,40 +1,95 @@
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== BODY ===== */
 body {
   font-family: "Segoe UI", Consolas, monospace;
   font-size: 13px;
+  background: #1e1e1e;
+  color: #ddd;
 }
 
-/* TITULOS */
+/* ===== APP LAYOUT ===== */
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* ===== LEFT PANEL ===== */
+.left {
+  width: 260px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #252526;
+  border-right: 1px solid #333;
+}
+
+/* ===== RIGHT PANEL ===== */
+.right {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* ===== BOXES ===== */
+.box {
+  background: #2d2d30;
+  border: 1px solid #3c3c3c;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+/* ===== TITLES ===== */
 .box h3 {
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  margin-bottom: 6px;
   color: #4fc1ff;
+  letter-spacing: 0.5px;
 }
 
-/* LABELS */
+/* ===== LABELS ===== */
 label {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
-/* CHECKBOX + TEXTO */
-label input[type="checkbox"] {
-  margin-right: 6px;
+/* ===== CHECKBOX ===== */
+input[type="checkbox"] {
+  accent-color: #0e639c;
   transform: scale(0.9);
+  margin-right: 6px;
 }
 
-/* INPUTS */
-input, select {
+/* ===== INPUTS ===== */
+input,
+select {
   width: 100%;
   height: 24px;
-  font-size: 13px;
   padding: 2px 6px;
+  background: #1e1e1e;
+  border: 1px solid #3c3c3c;
+  color: #ddd;
+  border-radius: 4px;
+  font-size: 13px;
 }
 
-/* BONUS ROW */
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #4fc1ff;
+}
+
+/* ===== BONUS ROW ===== */
 .row {
   display: flex;
   align-items: center;
@@ -52,20 +107,34 @@ input, select {
   width: 50px;
 }
 
-/* CONDIÇÕES GRID */
+/* ===== CONDIÇÕES ===== */
 .box:nth-of-type(3) label {
   justify-content: flex-start;
   gap: 6px;
 }
 
-/* PASSO */
+/* ===== PASSO ===== */
 #passo_val {
   display: inline-block;
   width: 20px;
   text-align: center;
+  font-weight: bold;
 }
 
-/* BOTÕES PASSO */
+/* ===== BOTÕES ===== */
+button {
+  background: #3c3c3c;
+  border: none;
+  color: #ddd;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #505050;
+}
+
 #passo-,
 #passo+ {
   width: 24px;
@@ -73,10 +142,23 @@ input, select {
   padding: 0;
 }
 
-/* PREVIEW */
+/* ===== BOTÃO ROLAR ===== */
+button[onclick="rolar()"] {
+  margin-top: 6px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  background: #0e639c;
+}
+
+button[onclick="rolar()"]:hover {
+  background: #1177bb;
+}
+
+/* ===== PREVIEW ===== */
 #preview_roll {
   font-size: 13px;
   color: #4fc1ff;
+  margin-bottom: 4px;
 }
 
 #preview_dmg {
@@ -85,8 +167,43 @@ input, select {
   white-space: pre-line;
 }
 
-/* ROLAR */
-button[onclick="rolar()"] {
+/* ===== HISTÓRICO ===== */
+#historico {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+/* ITEM */
+.roll {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid #3c3c3c;
+  background: #1e1e1e;
+  font-family: Consolas, monospace;
+}
+
+/* CRÍTICO */
+.roll.crit {
+  background: #5a0000;
+  border-color: #aa0000;
+  color: #fff;
   font-weight: bold;
-  letter-spacing: 0.5px;
+}
+
+/* CHECKBOX HISTÓRICO */
+.roll input {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== TOTAL ===== */
+#total {
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #4fc1ff;
 }
