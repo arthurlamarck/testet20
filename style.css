@@ -1,10 +1,91 @@
+body {
+  margin: 0;
+  font-family: Consolas, monospace;
+  background: #1e1e1e;
+  color: #eee;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.left {
+  width: 260px;
+  padding: 10px;
+  background: #2a2a2a;
+  overflow-y: auto;
+}
+
+.right {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.box {
+  border: 1px solid #444;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.box h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+input {
+  width: 50px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+button {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #666;
+}
+
+#rolar {
+  width: 100%;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* HISTÓRICO */
 .roll {
-  padding: 4px;
-  border-bottom: 1px solid #444;
+  border: 1px solid #555;
+  padding: 6px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .roll.crit {
   background: #5a0000;
-  color: #fff;
+  color: #ffb3b3;
   font-weight: bold;
+}
+
+.roll .left-part {
+  display: flex;
+  gap: 10px;
+}
+
+.roll input {
+  width: 15px;
 }
