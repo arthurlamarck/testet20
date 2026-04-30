@@ -27,16 +27,11 @@ function rolarDado(f){
   return Math.floor(Math.random()*f)+1;
 }
 
-function rolarDados(qtd, faces){
-  return Array.from({length:qtd}, () => rolarDado(faces));
-}
-
-function soma(arr){
-  return arr.reduce((a,b)=>a+b,0);
-}
-
-function ev(qtd, faces){
-  return qtd * (faces+1)/2;
+// ---------- PASSO UTIL ----------
+function subirPasso(dado, passos){
+  let idx = PASSOS.findIndex(p => p[0]===dado[0] && p[1]===dado[1]);
+  idx = Math.min(idx + passos, PASSOS.length-1);
+  return PASSOS[idx];
 }
 
 // ---------- INIT ----------
@@ -90,7 +85,8 @@ function modCombate(){
   return Math.floor(n/2) + m + treino;
 }
 
-function getPassoIndex(){
+// ---------- PASSO BASE ----------
+function getPassoBase(){
   let base = PASSOS.findIndex(p =>
     p[0] === arma.dano[0] && p[1] === arma.dano[1]
   );
@@ -102,6 +98,7 @@ function getPassoIndex(){
   return Math.max(0, Math.min(base + mod, PASSOS.length-1));
 }
 
+// ---------- MARGEM ----------
 function margemFinal(){
   let margem = arma.margem;
 
@@ -116,33 +113,61 @@ function margemFinal(){
 
 // ---------- PREVIEW ----------
 function atualizarPreview(){
+
   let atk = modCombate()
     + num("atk_bonus") - num("atk_pen")
     + (checked("primeiro_sangue") ? 2 : 0);
 
-  let baseIdx = getPassoIndex();
+  let baseIdx = getPassoBase();
   let critIdx = Math.min(baseIdx + arma.passoCrit, PASSOS.length-1);
 
   let base = PASSOS[baseIdx];
   let crit = PASSOS[critIdx];
 
-  let bonus =
-    num("dmg_bonus") + num("mod") - num("dmg_pen");
-
   let extras = [];
 
-  if(checked("marca")) extras.push("Marca 1d8" + (checked("monstro") ? " +1d8" : ""));
-  if(checked("escaramuca")) extras.push("Escaramuça 1d8");
-  if(checked("grande")) extras.push("Grande 1d10");
-  if(checked("ultimo_sangue")) extras.push(`Último Sangue 1d${base[1]}`);
+  // PASSO GLOBAL (primeiro sangue)
+  let extraStep = checked("primeiro_sangue") ? 2 : 0;
+
+  if(checked("marca")){
+    let dado = subirPasso([1,8], extraStep);
+    extras.push(`${dado[0]}d${dado[1]} (Marca)`);
+
+    if(checked("monstro")){
+      extras.push(`${dado[0]}d${dado[1]} (Marca Extra)`);
+    }
+  }
+
+  if(checked("escaramuca")){
+    let dado = subirPasso([1,8], extraStep);
+    extras.push(`${dado[0]}d${dado[1]} (Escaramuça)`);
+  }
+
+  if(checked("grande")){
+    let dado = subirPasso([1,10], extraStep);
+    extras.push(`${dado[0]}d${dado[1]} (Grande)`);
+  }
+
+  if(checked("ultimo_sangue")){
+    let dadoBase = PASSOS[baseIdx];
+    let dado = subirPasso([1,dadoBase[1]], 0);
+    extras.push(`${dado[0]}d${dado[1]} (Último Sangue)`);
+  }
+
+  let bonusDano =
+    num("dmg_bonus")
+    + num("mod")
+    - num("dmg_pen");
 
   document.getElementById("preview_roll").innerText =
     `1d20 + ${atk} | Crit ${margemFinal()}+`;
 
   document.getElementById("preview_dmg").innerText =
-    `${base[0]}d${base[1]} x${arma.mult} + ${bonus}
-     ${extras.length ? "\nExtras: " + extras.join(", ") : ""}
-     | Crit ${crit[0]}d${crit[1]}`;
+`Dano: ${base[0]}d${base[1]} x${arma.mult} + ${bonusDano}
+Crit: ${crit[0]}d${crit[1]}
+
+Extras:
+${extras.join("\n") || "-"}`;
 }
 
 // ---------- ROLL ----------
@@ -157,42 +182,70 @@ function rolar(){
 
   let critico = d20 >= margemFinal();
 
-  let passoIdx = getPassoIndex();
-  if(critico) passoIdx += arma.passoCrit;
-
-  passoIdx = Math.min(passoIdx, PASSOS.length-1);
+  let baseIdx = getPassoBase();
+  let passoIdx = critico
+    ? Math.min(baseIdx + arma.passoCrit, PASSOS.length-1)
+    : baseIdx;
 
   let [dados, faces] = PASSOS[passoIdx];
 
-  // ===== BASE =====
-  let baseRolls = rolarDados(dados, faces);
-  let baseTotal = soma(baseRolls);
+  let rollsBase = [];
+  let dano = 0;
 
-  if(critico) baseTotal *= arma.mult;
+  for(let i=0;i<dados;i++){
+    let r = rolarDado(faces);
+    rollsBase.push(r);
+    dano += r;
+  }
 
-  // ===== EXTRAS =====
-  let marca = checked("marca")
-    ? [...rolarDados(1,8), ...(checked("monstro") ? rolarDados(1,8):[])]
-    : [];
+  if(critico) dano *= arma.mult;
 
-  let escaramuca = checked("escaramuca") ? rolarDados(1,8) : [];
-  let grande = checked("grande") ? rolarDados(1,10) : [];
-  let ultimo = checked("ultimo_sangue") ? rolarDados(1,faces) : [];
+  let total = dano;
+  let detalhes = [];
 
-  let bonus = num("dmg_bonus") + num("mod") - num("dmg_pen");
+  detalhes.push(`Arma: ${dados}d${faces} → [${rollsBase.join(", ")}] = ${dano}`);
 
-  let total =
-    baseTotal + soma(marca) + soma(escaramuca)
-    + soma(grande) + soma(ultimo) + bonus;
+  // PASSO GLOBAL
+  let extraStep = checked("primeiro_sangue") ? 2 : 0;
 
-  addHistorico(ataque, total, critico, {
-    base:{dados:baseRolls, faces, qtd:dados, mult:critico?arma.mult:1, total:baseTotal},
-    marca, escaramuca, grande, ultimo, bonus
-  });
+  function rollExtra(nome, dado){
+    let d = subirPasso(dado, extraStep);
+    let r = rolarDado(d[1]);
+    total += r;
+    detalhes.push(`${nome}: ${d[0]}d${d[1]} → ${r}`);
+  }
+
+  if(checked("marca")){
+    rollExtra("Marca", [1,8]);
+    if(checked("monstro")) rollExtra("Marca Extra", [1,8]);
+  }
+
+  if(checked("escaramuca")){
+    rollExtra("Escaramuça", [1,8]);
+  }
+
+  if(checked("grande")){
+    rollExtra("Grande", [1,10]);
+  }
+
+  if(checked("ultimo_sangue")){
+    let baseFace = PASSOS[baseIdx][1];
+    rollExtra("Último Sangue", [1, baseFace]);
+  }
+
+  let bonus =
+    num("dmg_bonus") + num("mod") - num("dmg_pen");
+
+  total += bonus;
+
+  detalhes.push(`Bônus: ${bonus}`);
+  detalhes.push(`TOTAL: ${total}`);
+
+  addHistorico(ataque, total, critico, detalhes.join("\n"));
 }
 
 // ---------- HISTÓRICO ----------
-function addHistorico(atk, total, crit, bd){
+function addHistorico(atk, dmg, crit, detalhesTxt){
 
   let container = document.createElement("div");
   container.className = "roll-container";
@@ -202,11 +255,10 @@ function addHistorico(atk, total, crit, bd){
   header.className = "roll";
 
   let left = document.createElement("div");
-  left.innerText = `▶ ATK ${atk} | DMG ${total} ${crit ? "💥":""}`;
+  left.innerText = `▶ ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
 
   let chk = document.createElement("input");
   chk.type = "checkbox";
-  chk.onclick = e => e.stopPropagation();
   chk.onchange = atualizarTotal;
 
   header.appendChild(left);
@@ -215,38 +267,13 @@ function addHistorico(atk, total, crit, bd){
   let detalhes = document.createElement("div");
   detalhes.className = "detalhes";
   detalhes.style.display = "none";
-
-  function linha(nome, dados, faces){
-    if(!dados.length) return null;
-    return `${nome}: 1d${faces} → (${dados.join(", ")}) = ${soma(dados)}`;
-  }
-
-  let linhas = [];
-
-  linhas.push(
-    `Arma: ${bd.base.qtd}d${bd.base.faces} → (${bd.base.dados.join(", ")})`
-    + (bd.base.mult>1?` x${bd.base.mult}`:"")
-    + ` = ${bd.base.total} (EV ${ev(bd.base.qtd, bd.base.faces).toFixed(1)})`
-  );
-
-  [linha("Marca", bd.marca, 8),
-   linha("Escaramuça", bd.escaramuca, 8),
-   linha("Grande", bd.grande, 10),
-   linha("Último Sangue", bd.ultimo, bd.base.faces)
-  ].forEach(l=>{ if(l) linhas.push(l); });
-
-  if(bd.bonus) linhas.push(`Bônus: ${bd.bonus}`);
-
-  linhas.push("------------");
-  linhas.push(`TOTAL: ${total}`);
-
-  detalhes.innerText = linhas.join("\n");
+  detalhes.innerText = detalhesTxt;
 
   header.onclick = () => {
     let aberto = detalhes.style.display === "block";
     detalhes.style.display = aberto ? "none" : "block";
     left.innerText =
-      `${aberto ? "▶" : "▼"} ATK ${atk} | DMG ${total} ${crit ? "💥":""}`;
+      `${aberto ? "▶" : "▼"} ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
   };
 
   container.appendChild(header);
@@ -254,9 +281,10 @@ function addHistorico(atk, total, crit, bd){
 
   document.getElementById("historico").prepend(container);
 
-  rolls.push({chk, dmg: total});
+  rolls.push({chk, dmg});
 }
 
+// ---------- TOTAL ----------
 function atualizarTotal(){
   let total = rolls
     .filter(r => r.chk.checked)
