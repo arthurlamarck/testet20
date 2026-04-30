@@ -175,8 +175,10 @@ function atualizarTotal(){
 }
 
 // ---------- AUTO UPDATE ---------
-document.querySelectorAll("input, select").forEach(el=>{
-  el.addEventListener("input", atualizarPreview);
-});
+window.onload = () => {
+  document.querySelectorAll("input, select").forEach(el=>{
+    el.addEventListener("input", atualizarPreview);
+  });
 
-atualizarPreview();
+  atualizarPreview();
+};
