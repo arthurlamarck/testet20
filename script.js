@@ -181,7 +181,9 @@ function rolar(){
   let ataque = d20 + atkTotal;
 
   let critico = d20 >= margemFinal();
-
+  let falha = d20 === 1;
+  animarD20(d20, critico, falha);
+  
   let baseIdx = getPassoBase();
   let passoIdx = critico
     ? Math.min(baseIdx + arma.passoCrit, PASSOS.length-1)
@@ -292,4 +294,32 @@ function atualizarTotal(){
 
   document.getElementById("total").innerText =
     "Dano Total: " + total;
+}
+// ---------- ANIMAÇAOD20 ----------
+function animarD20(resultado, critico, falha){
+
+  const el = document.getElementById("d20");
+
+  let count = 0;
+  el.classList.remove("crit", "fail");
+  el.classList.add("rolling");
+
+  const interval = setInterval(() => {
+    el.innerText = Math.floor(Math.random()*20)+1;
+    count++;
+
+    if(count > 10){ // duração da animação
+      clearInterval(interval);
+
+      el.classList.remove("rolling");
+      el.innerText = resultado;
+
+      if(critico){
+        el.classList.add("crit");
+      } else if(falha){
+        el.classList.add("fail");
+      }
+    }
+
+  }, 50); // velocidade
 }
