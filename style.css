@@ -108,9 +108,27 @@ select:focus {
 }
 
 /* ===== CONDIÇÕES ===== */
-.box:nth-of-type(3) label {
-  justify-content: flex-start;
-  gap: 6px;
+.condicoes {
+  display: grid;
+  grid-template-columns: 18px auto;
+  gap: 8px 10px;
+  align-items: center;
+}
+
+.condicoes label {
+  display: contents;
+}
+
+/* checkbox */
+.condicoes input[type="checkbox"] {
+  margin: 0;
+  justify-self: center;
+}
+
+/* texto */
+.condicoes span {
+  font-size: 13px;
+  color: #ddd;
 }
 
 /* ===== PASSO ===== */
@@ -244,23 +262,3 @@ button[onclick="rolar()"]:hover {
   background: #3a0000;
 }
 
-.checks {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 colunas */
-  gap: 8px 12px;
-  margin-top: 6px;
-}
-
-.checks label {
-  display: flex;
-  align-items: left;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  color: #ddd;
-}
-
-.checks input[type="checkbox"] {
-  accent-color: #4aa3ff;
-  transform: scale(1.1);
-}
