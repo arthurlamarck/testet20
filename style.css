@@ -10,82 +10,112 @@ body {
   height: 100vh;
 }
 
+/* LEFT */
 .left {
   width: 260px;
   padding: 10px;
-  background: #2a2a2a;
+  background: #252526;
   overflow-y: auto;
+  border-right: 1px solid #333;
 }
 
+/* RIGHT */
 .right {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
 }
 
+/* BOXES */
 .box {
-  border: 1px solid #444;
-  padding: 8px;
+  border: 1px solid #333;
   margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #2d2d30;
 }
 
 .box h3 {
-  margin: 0 0 6px;
+  margin: 0 0 6px 0;
   font-size: 14px;
+  color: #9cdcfe;
 }
 
+/* INPUTS */
+input, select {
+  width: 100%;
+  margin-bottom: 6px;
+  background: #1e1e1e;
+  color: white;
+  border: 1px solid #444;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+/* ROW BONUS */
 .row {
   display: flex;
-  gap: 4px;
   align-items: center;
+  gap: 4px;
 }
 
-input {
-  width: 50px;
-  background: #111;
-  color: #fff;
-  border: 1px solid #555;
+.row span {
+  width: 60px;
 }
 
+/* CHECKBOXES */
+label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+/* BOTÕES */
 button {
-  background: #444;
-  color: white;
+  background: #3a3d41;
   border: none;
-  padding: 5px;
+  color: white;
+  padding: 6px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 button:hover {
-  background: #666;
+  background: #505357;
 }
 
-#rolar {
-  width: 100%;
-  margin-top: 10px;
-  font-weight: bold;
+/* PASSO */
+#passo_val {
+  margin: 0 8px;
+}
+
+/* PREVIEW */
+#preview_roll {
+  color: #4fc1ff;
+}
+
+#preview_dmg {
+  color: #dcdcaa;
 }
 
 /* HISTÓRICO */
 .roll {
-  border: 1px solid #555;
-  padding: 6px;
-  margin-bottom: 4px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  padding: 6px;
+  border: 1px solid #333;
+  margin-bottom: 4px;
+  border-radius: 4px;
 }
 
 .roll.crit {
   background: #5a0000;
-  color: #ffb3b3;
-  font-weight: bold;
+  border-color: #aa0000;
 }
 
-.roll .left-part {
-  display: flex;
-  gap: 10px;
-}
-
-.roll input {
-  width: 15px;
+/* TOTAL */
+#total {
+  margin-bottom: 10px;
+  color: #4ec9b0;
 }
