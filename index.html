@@ -1,180 +1,91 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>RPG Roller</title>
-
-<style>
-body {
-    font-family: monospace;
-    background: #1e1e1e;
-    color: #eee;
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-}
-
-.panel {
-    background: #2a2a2a;
-    padding: 12px;
-    border-radius: 8px;
-    width: 260px;
-}
-
-input {
-    width: 50px;
-}
-
-button {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.roll {
-    border: 1px solid #555;
-    padding: 6px;
-    margin-bottom: 4px;
-}
-
-.crit {
-    background: #3a0000;
-    color: #ff8080;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>RPG Roller</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="panel">
-    <h3>Personagem</h3>
-    Nível <input id="nivel" value="0"><br>
-    Mod <input id="mod" value="0"><br>
-    <label><input type="checkbox" id="treinado"> Treinado</label>
+<div class="app">
 
-    <h3>Bônus</h3>
-    Atk <input id="batk" value="0"> - <input id="patk" value="0"><br>
-    Dmg <input id="bdmg" value="0"> - <input id="pdmg" value="0">
+  <!-- LEFT PANEL -->
+  <div class="left">
 
-    <h3>Condições</h3>
-    <label><input type="checkbox" id="marca" checked> Marca</label><br>
-    <label><input type="checkbox" id="monstro" checked> Monstro</label><br>
-    <label><input type="checkbox" id="grande"> Grande</label><br>
-    <label><input type="checkbox" id="ultimo"> Último Sangue</label><br>
-    <label><input type="checkbox" id="primeiro"> Primeiro Sangue</label>
+    <div class="box">
+      <h3>Personagem</h3>
+      <label>Nível</label>
+      <input id="nivel" type="number" value="0">
 
-    <h3>Extra</h3>
-    Margem <input id="margem" value="0">
+      <label>Mod Atributo</label>
+      <input id="mod" type="number" value="0">
 
-    <h3>Preview</h3>
-    <div id="preview"></div>
+      <label>
+        <input type="checkbox" id="treinado"> Treinado
+      </label>
+    </div>
 
-    <button onclick="rolar()">ROLAR</button>
+    <div class="box">
+      <h3>Bônus</h3>
+      <div class="row">
+        <span>Ataque</span>
+        <input id="atk_bonus" type="number" value="0">
+        <input id="atk_pen" type="number" value="0">
+      </div>
+
+      <div class="row">
+        <span>Dano</span>
+        <input id="dmg_bonus" type="number" value="0">
+        <input id="dmg_pen" type="number" value="0">
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Condições</h3>
+      <label><input type="checkbox" id="marca"> Marca</label>
+      <label><input type="checkbox" id="monstro"> Monstro</label>
+      <label><input type="checkbox" id="grande"> Grande</label>
+      <label><input type="checkbox" id="ultimo"> Último Sangue</label>
+      <label><input type="checkbox" id="primeiro"> Primeiro Sangue</label>
+    </div>
+
+    <div class="box">
+      <h3>Arma</h3>
+      <select id="arma">
+        <option>Presa da Serpente</option>
+        <option>Espada Longa</option>
+        <option>Machado Grande</option>
+      </select>
+    </div>
+
+    <div class="box">
+      <h3>Passo</h3>
+      <button id="passo-">-</button>
+      <span id="passo_val">0</span>
+      <button id="passo+">+</button>
+
+      <h4>Margem Extra</h4>
+      <input id="margem" type="number" value="0">
+    </div>
+
+    <div class="box">
+      <h3>Preview</h3>
+      <div id="preview_roll"></div>
+      <div id="preview_dmg"></div>
+    </div>
+
+    <button id="rolar">ROLAR</button>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+    <h3 id="total">Dano Total: 0</h3>
+    <div id="historico"></div>
+  </div>
+
 </div>
 
-<div style="flex:1">
-    <h3>Dano Total: <span id="total">0</span></h3>
-    <div id="hist"></div>
-</div>
-
-<script>
-const PASSOS = [
-[1,1],[1,2],[1,3],[1,4],
-[1,6],[1,8],[1,10],[1,12],
-[3,6],[4,6],[4,8],[4,10],[4,12]
-]
-
-let rolls = []
-
-function num(id){
-    return parseInt(document.getElementById(id).value) || 0
-}
-
-function getMod(){
-    let n = num("nivel")
-    let m = num("mod")
-    let t = document.getElementById("treinado").checked ? (n<=6?2:n<=14?4:6):0
-    return Math.floor(n/2)+m+t
-}
-
-function margemFinal(){
-    let base = 16
-    let extra = num("margem")
-
-    if(document.getElementById("marca").checked){
-        extra += document.getElementById("monstro").checked ? 4 : 2
-    }
-
-    return base - extra
-}
-
-function atualizar(){
-    let atk = getMod() + num("batk") - num("patk")
-
-    if(document.getElementById("primeiro").checked){
-        atk += 2
-    }
-
-    let margem = margemFinal()
-
-    document.getElementById("preview").innerText =
-        `1d20 + ${atk} | Crit ${margem}+`
-}
-
-document.querySelectorAll("input").forEach(e=>{
-    e.addEventListener("input", atualizar)
-})
-
-function rolar(){
-    let atk = getMod() + num("batk") - num("patk")
-
-    if(document.getElementById("primeiro").checked){
-        atk += 2
-    }
-
-    let d20 = Math.floor(Math.random()*20)+1
-    let margem = margemFinal()
-
-    let crit = d20 >= margem
-
-    let passo = 5
-
-    if(document.getElementById("primeiro").checked){
-        passo += 2
-    }
-
-    let [d,f] = PASSOS[passo]
-
-    let dano = 0
-    for(let i=0;i<d;i++){
-        dano += Math.floor(Math.random()*f)+1
-    }
-
-    if(crit) dano *= 3
-
-    let el = document.createElement("div")
-    el.className = "roll" + (crit?" crit":"")
-
-    el.innerHTML = `
-        ATK ${d20+atk} | DMG ${dano}
-        <input type="checkbox" onchange="somar(${dano}, this)">
-    `
-
-    document.getElementById("hist").prepend(el)
-}
-
-function somar(valor, el){
-    if(el.checked){
-        rolls.push(valor)
-    } else {
-        rolls.splice(rolls.indexOf(valor),1)
-    }
-
-    document.getElementById("total").innerText =
-        rolls.reduce((a,b)=>a+b,0)
-}
-
-atualizar()
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
