@@ -81,7 +81,7 @@ function getPassoIndex(){
 
   let mod = passoMod;
 
-  if(checked("primeiroSangue")) mod += 2;
+  if(checked("primeiro_sangue")) mod += 2;
 
   return Math.max(0, Math.min(base + mod, PASSOS.length-1));
 }
@@ -103,7 +103,7 @@ function margemFinal(){
 function atualizarPreview(){
   let atk = modCombate()
     + num("atk_bonus") - num("atk_pen")
-    + (checked("primeiroSangue") ? 2 : 0);
+    + (checked("primeiro_sangue") ? 2 : 0);
 
   let baseIdx = getPassoIndex();
   let critIdx = Math.min(baseIdx + arma.passoCrit, PASSOS.length-1);
@@ -158,7 +158,7 @@ function rolar(){
   }
 
   let grande = checked("grande") ? rolarDado(10) : 0;
-  let ultimo = checked("ultimoSangue") ? rolarDado(faces) : 0;
+  let ultimo = checked("ultimo_sangue") ? rolarDado(faces) : 0;
 
   let bonus =
     num("dmg_bonus") + num("mod") - num("dmg_pen");
