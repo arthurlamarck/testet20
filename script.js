@@ -16,11 +16,11 @@ let rolls = [];
 
 // ---------- HELPERS ----------
 function num(id){
-  return parseInt(document.getElementById(id).value) || 0;
+  return parseInt(document.getElementById(id)?.value) || 0;
 }
 
 function checked(id){
-  return document.getElementById(id).checked;
+  return document.getElementById(id)?.checked || false;
 }
 
 function rolarDado(f){
@@ -28,11 +28,32 @@ function rolarDado(f){
 }
 
 // ---------- ARMA SELECT ----------
-function trocarArma(){
-  const val = document.getElementById("arma").value;
-  arma = ARMAS[val];
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const select = document.getElementById("arma");
+
+  // cria opções automaticamente
+  Object.entries(ARMAS).forEach(([key, armaObj])=>{
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = armaObj.nome;
+    select.appendChild(opt);
+  });
+
+  // arma inicial
+  select.value = "presa";
+  arma = ARMAS["presa"];
+
+  // evento de troca
+  select.addEventListener("change", (e)=>{
+    arma = ARMAS[e.target.value];
+    atualizarPreview();
+  });
+
+  // inicializa preview
   atualizarPreview();
-}
+});
 
 // ---------- PASSO ----------
 function mudarPasso(v){
@@ -81,7 +102,7 @@ function margemFinal(){
 // ---------- PREVIEW ----------
 function atualizarPreview(){
   let atk = modCombate()
-    + num("atkBonus") - num("atkPen")
+    + num("atk_bonus") - num("atk_pen")
     + (checked("primeiroSangue") ? 2 : 0);
 
   let baseIdx = getPassoIndex();
@@ -95,10 +116,10 @@ function atualizarPreview(){
     + num("mod")
     - num("dmgPen");
 
-  document.getElementById("previewAtk").innerText =
+  document.getElementById("preview_roll").innerText =
     `1d20 + ${atk} | Crit ${margemFinal()}+`;
 
-  document.getElementById("previewDmg").innerText =
+  document.getElementById("preview_dmg").innerText =
     `${base[0]}d${base[1]} x${arma.mult} + ${bonusDano}
      | Crit ${crit[0]}d${crit[1]}`;
 }
@@ -106,7 +127,7 @@ function atualizarPreview(){
 // ---------- ROLL ----------
 function rolar(){
   let atkTotal = modCombate()
-    + num("atkBonus") - num("atkPen")
+    + num("atk_bonus") - num("atk_pen")
     + (checked("primeiroSangue") ? 2 : 0);
 
   let d20 = rolarDado(20);
@@ -140,7 +161,7 @@ function rolar(){
   let ultimo = checked("ultimoSangue") ? rolarDado(faces) : 0;
 
   let bonus =
-    num("dmgBonus") + num("mod") - num("dmgPen");
+    num("dmg_bonus") + num("mod") - num("dmg_pen");
 
   let total = dano + marca + grande + ultimo + bonus;
 
@@ -174,11 +195,23 @@ function atualizarTotal(){
     "Dano Total: " + total;
 }
 
-// ---------- AUTO UPDATE ---------
-window.onload = () => {
-  document.querySelectorAll("input, select").forEach(el=>{
-    el.addEventListener("input", atualizarPreview);
-  });
-
+document.getElementById("passo+").onclick = () => {
+  passoMod++;
+  document.getElementById("passo_val").innerText = passoMod;
   atualizarPreview();
+};
+
+document.getElementById("passo-").onclick = () => {
+  passoMod--;
+  document.getElementById("passo_val").innerText = passoMod;
+  atualizarPreview();
+};
+
+// ---------- AUTO UPDATE ---------
+document.querySelectorAll("input").forEach(el=>{
+  el.addEventListener("input", atualizarPreview);
+});
+
+atualizarPreview();
+
 };
