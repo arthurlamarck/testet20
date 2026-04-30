@@ -14,7 +14,7 @@ let arma = ARMAS["presa"];
 let passoMod = 0;
 let rolls = [];
 
-// HELPERS
+// ---------- HELPERS ----------
 function num(id){
   return parseInt(document.getElementById(id)?.value) || 0;
 }
@@ -27,7 +27,12 @@ function rolarDado(f){
   return Math.floor(Math.random()*f)+1;
 }
 
-// INIT
+// média de um dado
+function mediaDado(qtd, faces){
+  return qtd * (faces + 1) / 2;
+}
+
+// ---------- INIT ----------
 document.addEventListener("DOMContentLoaded", () => {
 
   const select = document.getElementById("arma");
@@ -73,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
   atualizarPreview();
 });
 
-// COMBATE
+// ---------- COMBATE ----------
 function modCombate(){
   let n = num("nivel");
   let m = num("mod");
@@ -85,7 +90,7 @@ function modCombate(){
   return Math.floor(n/2) + m + treino;
 }
 
-// PASSO
+// ---------- PASSO ----------
 function getPassoIndex(){
   let base = PASSOS.findIndex(p =>
     p[0] === arma.dano[0] && p[1] === arma.dano[1]
@@ -97,7 +102,7 @@ function getPassoIndex(){
   return Math.max(0, Math.min(base + mod, PASSOS.length-1));
 }
 
-// MARGEM
+// ---------- MARGEM ----------
 function margemFinal(){
   let margem = arma.margem;
 
@@ -110,8 +115,9 @@ function margemFinal(){
   return Math.max(2, margem);
 }
 
-// PREVIEW
+// ---------- PREVIEW ----------
 function atualizarPreview(){
+
   let atk = modCombate()
     + num("atk_bonus") - num("atk_pen")
     + (checked("primeiro_sangue") ? 2 : 0);
@@ -122,41 +128,64 @@ function atualizarPreview(){
   let base = PASSOS[baseIdx];
   let crit = PASSOS[critIdx];
 
-  let bonusDano =
-    num("dmg_bonus") + num("mod") - num("dmg_pen");
+  let bonus = num("dmg_bonus") + num("mod") - num("dmg_pen");
 
-  // EXTRAS
+  // ===== EXTRAS =====
   let extras = [];
+  let mediaExtras = 0;
 
+  // Marca
   if(checked("marca")){
     extras.push("1d8");
-    if(checked("monstro")) extras.push("1d8");
+    mediaExtras += mediaDado(1,8);
+
+    if(checked("monstro")){
+      extras.push("1d8");
+      mediaExtras += mediaDado(1,8);
+    }
   }
 
+  // Escaramuça
   if(checked("escaramuca")){
     extras.push("1d8");
+    mediaExtras += mediaDado(1,8);
   }
 
+  // Grande
   if(checked("grande")){
     extras.push("1d10");
+    mediaExtras += mediaDado(1,10);
   }
 
+  // Último Sangue (corrigido)
   if(checked("ultimo_sangue")){
-    extras.push(`${base[1]} (extra)`);
+    extras.push(`1d${base[1]} (crit: 1d${crit[1]})`);
+    mediaExtras += mediaDado(1, base[1]);
   }
 
-  let extrasTxt = extras.length ? " + " + extras.join(" + ") : "";
+  let extrasTxt = extras.length ? extras.join(" + ") : "-";
 
+  // ===== MÉDIA =====
+  let mediaBase = mediaDado(base[0], base[1]) + bonus;
+  let mediaCrit = mediaDado(crit[0], crit[1]) * arma.mult + bonus;
+
+  let mediaTotal = mediaBase + mediaExtras;
+
+  // ===== OUTPUT =====
   document.getElementById("preview_roll").innerText =
     `1d20 + ${atk} | Crit ${margemFinal()}+`;
 
-  document.getElementById("preview_dmg").innerText =
-    `${base[0]}d${base[1]} x${arma.mult} + ${bonusDano}${extrasTxt}
-     | Crit ${crit[0]}d${crit[1]}`;
+  document.getElementById("preview_dmg").innerHTML = `
+  <b>Base:</b> ${base[0]}d${base[1]} x${arma.mult} + ${bonus}<br>
+  <b>Extras:</b> ${extrasTxt}<br>
+  <b>Crítico:</b> ${crit[0]}d${crit[1]}<br>
+  <b>Média:</b> ~${mediaTotal.toFixed(1)}
+  `;
 }
 
-// ROLL
+// ---------- ROLL ----------
 function rolar(){
+
   let atkTotal = modCombate()
     + num("atk_bonus") - num("atk_pen")
     + (checked("primeiro_sangue") ? 2 : 0);
@@ -166,9 +195,10 @@ function rolar(){
 
   let critico = d20 >= margemFinal();
 
-  let passoIdx = getPassoIndex();
-  if(critico) passoIdx += arma.passoCrit;
-  passoIdx = Math.min(passoIdx, PASSOS.length-1);
+  let baseIdx = getPassoIndex();
+  let critIdx = Math.min(baseIdx + arma.passoCrit, PASSOS.length-1);
+
+  let passoIdx = critico ? critIdx : baseIdx;
 
   let [dados, faces] = PASSOS[passoIdx];
 
@@ -181,10 +211,25 @@ function rolar(){
     dano *= arma.mult;
   }
 
-  let marca = checked("marca") ? rolarDado(8) + (checked("monstro") ? rolarDado(8) : 0) : 0;
+  // extras
+  let marca = 0;
+  if(checked("marca")){
+    marca += rolarDado(8);
+    if(checked("monstro")) marca += rolarDado(8);
+  }
+
   let escaramuca = checked("escaramuca") ? rolarDado(8) : 0;
   let grande = checked("grande") ? rolarDado(10) : 0;
-  let ultimo = checked("ultimo_sangue") ? rolarDado(faces) : 0;
+
+  // Último Sangue corrigido
+  let ultimo = 0;
+  if(checked("ultimo_sangue")){
+    let facesExtra = critico
+      ? PASSOS[critIdx][1]
+      : PASSOS[baseIdx][1];
+
+    ultimo = rolarDado(facesExtra);
+  }
 
   let bonus = num("dmg_bonus") + num("mod") - num("dmg_pen");
 
@@ -207,8 +252,9 @@ TOTAL: ${total}
   addHistorico(ataque, total, critico, detalhes);
 }
 
-// HISTÓRICO
+// ---------- HISTÓRICO ----------
 function addHistorico(atk, dmg, crit, detalhesTxt){
+
   let container = document.createElement("div");
   container.className = "roll-container";
   if(crit) container.classList.add("crit");
