@@ -180,7 +180,46 @@ function rolar(){
 
   let total = dano + marca + grande + ultimo + bonus;
 
-  addHistorico(ataque, total, critico);
+ function addHistorico(atk, dmg, crit, detalhesTxt){
+  let container = document.createElement("div");
+  container.className = "roll-container";
+
+  if(crit) container.classList.add("crit");
+
+  // ===== HEADER =====
+  let header = document.createElement("div");
+  header.className = "roll";
+
+  let left = document.createElement("div");
+  left.innerText = `▶ ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
+
+  let chk = document.createElement("input");
+  chk.type = "checkbox";
+  chk.onchange = atualizarTotal;
+
+  header.appendChild(left);
+  header.appendChild(chk);
+
+  // ===== DETALHES =====
+  let detalhes = document.createElement("div");
+  detalhes.className = "detalhes";
+  detalhes.innerText = detalhesTxt;
+  detalhes.style.display = "none";
+
+  // toggle
+  header.onclick = () => {
+    let aberto = detalhes.style.display === "block";
+    detalhes.style.display = aberto ? "none" : "block";
+    left.innerText =
+      `${aberto ? "▶" : "▼"} ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
+  };
+
+  container.appendChild(header);
+  container.appendChild(detalhes);
+
+  document.getElementById("historico").prepend(container);
+
+  rolls.push({chk, dmg});
 }
 
 // ---------- HISTÓRICO ----------
