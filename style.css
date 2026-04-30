@@ -1,0 +1,10 @@
+.roll {
+  padding: 4px;
+  border-bottom: 1px solid #444;
+}
+
+.roll.crit {
+  background: #5a0000;
+  color: #fff;
+  font-weight: bold;
+}
