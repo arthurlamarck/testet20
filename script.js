@@ -66,6 +66,14 @@ document.addEventListener("DOMContentLoaded", () => {
     el.addEventListener("input", atualizarPreview);
   });
 
+  document.querySelectorAll(".condicoes span").forEach(span=>{
+  span.onclick = () => {
+    const input = span.previousElementSibling;
+    input.checked = !input.checked;
+    input.dispatchEvent(new Event("input"));
+  };
+});
+
   atualizarPreview();
 });
 
