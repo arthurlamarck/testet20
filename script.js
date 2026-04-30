@@ -70,6 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
     el.addEventListener("input", atualizarPreview);
   });
 
+  document.getElementById("btnRoll").onclick = () => {
+    animarDado(() => {
+      rolar();
+    });
+  };
+
   atualizarPreview();
 });
 
@@ -177,13 +183,23 @@ function rolar(){
     + num("atk_bonus") - num("atk_pen")
     + (checked("primeiro_sangue") ? 2 : 0);
 
-  let d20 = rolarDado(20);
+  let d20 = window._lastD20 || rolarDado(20);
   let ataque = d20 + atkTotal;
 
   let critico = d20 >= margemFinal();
   let falha = d20 === 1;
-  animarD20(d20, critico, falha);
   
+  const dice = document.getElementById("dice");
+
+  dice.classList.remove("crit", "fail");
+  
+  if(d20 === 1){
+    dice.classList.add("fail");
+  }
+  else if(d20 >= margemFinal()){
+    dice.classList.add("crit");
+  }
+    
   let baseIdx = getPassoBase();
   let passoIdx = critico
     ? Math.min(baseIdx + arma.passoCrit, PASSOS.length-1)
@@ -296,32 +312,31 @@ function atualizarTotal(){
     "Dano Total: " + total;
 }
 // ---------- ANIMAÇAOD20 ----------
-function animarD20(resultado, critico, falha){
+function animarDado(callback){
+  const dice = document.getElementById("dice");
+  const value = document.getElementById("diceValue");
 
-  const el = document.getElementById("d20");
+  // reset estado
+  dice.classList.remove("crit", "fail");
 
-  el.classList.remove("crit", "fail");
+  let frames = 10;
+  let i = 0;
 
-  // começa animação
-  el.classList.add("rolling");
+  const interval = setInterval(() => {
+    value.innerText = Math.floor(Math.random()*20)+1;
+    i++;
 
-  let fake = setInterval(()=>{
-    el.innerText = Math.floor(Math.random()*20)+1;
-  }, 50);
+    if(i >= frames){
+      clearInterval(interval);
 
-  setTimeout(() => {
-    clearInterval(fake);
+      // valor final REAL
+      const final = Math.floor(Math.random()*20)+1;
+      value.innerText = final;
 
-    el.classList.remove("rolling");
+      // guarda temporariamente
+      window._lastD20 = final;
 
-    // resultado real
-    el.innerText = resultado;
-
-    if(critico){
-      el.classList.add("crit");
-    } else if(falha){
-      el.classList.add("fail");
+      if(callback) callback(final);
     }
-
-  }, 600); //tempo igual do css
+  }, 50);
 }
