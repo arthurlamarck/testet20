@@ -14,7 +14,7 @@ let arma = ARMAS["presa"];
 let passoMod = 0;
 let rolls = [];
 
-// ---------- HELPERS ----------
+// HELPERS
 function num(id){
   return parseInt(document.getElementById(id)?.value) || 0;
 }
@@ -27,12 +27,11 @@ function rolarDado(f){
   return Math.floor(Math.random()*f)+1;
 }
 
-// ---------- INIT ----------
+// INIT
 document.addEventListener("DOMContentLoaded", () => {
 
   const select = document.getElementById("arma");
 
-  // popula armas
   Object.entries(ARMAS).forEach(([key, armaObj])=>{
     const opt = document.createElement("option");
     opt.value = key;
@@ -41,14 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   select.value = "presa";
-  arma = ARMAS["presa"];
 
   select.addEventListener("change", (e)=>{
     arma = ARMAS[e.target.value];
     atualizarPreview();
   });
 
-  // botões passo
   document.getElementById("passo+").onclick = () => {
     passoMod++;
     document.getElementById("passo_val").innerText = passoMod;
@@ -61,12 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
     atualizarPreview();
   };
 
-  // auto update
   document.querySelectorAll("input").forEach(el=>{
     el.addEventListener("input", atualizarPreview);
   });
 
-  // clicar no texto marca checkbox
   document.querySelectorAll(".condicoes span").forEach(span=>{
     span.onclick = () => {
       const input = span.previousElementSibling;
@@ -78,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   atualizarPreview();
 });
 
-// ---------- COMBATE ----------
+// COMBATE
 function modCombate(){
   let n = num("nivel");
   let m = num("mod");
@@ -90,20 +85,19 @@ function modCombate(){
   return Math.floor(n/2) + m + treino;
 }
 
-// ---------- PASSO ----------
+// PASSO
 function getPassoIndex(){
   let base = PASSOS.findIndex(p =>
     p[0] === arma.dano[0] && p[1] === arma.dano[1]
   );
 
   let mod = passoMod;
-
   if(checked("primeiro_sangue")) mod += 2;
 
   return Math.max(0, Math.min(base + mod, PASSOS.length-1));
 }
 
-// ---------- MARGEM ----------
+// MARGEM
 function margemFinal(){
   let margem = arma.margem;
 
@@ -116,7 +110,7 @@ function margemFinal(){
   return Math.max(2, margem);
 }
 
-// ---------- PREVIEW ----------
+// PREVIEW
 function atualizarPreview(){
   let atk = modCombate()
     + num("atk_bonus") - num("atk_pen")
@@ -129,19 +123,39 @@ function atualizarPreview(){
   let crit = PASSOS[critIdx];
 
   let bonusDano =
-    num("dmg_bonus")
-    + num("mod")
-    - num("dmg_pen");
+    num("dmg_bonus") + num("mod") - num("dmg_pen");
+
+  // EXTRAS
+  let extras = [];
+
+  if(checked("marca")){
+    extras.push("1d8");
+    if(checked("monstro")) extras.push("1d8");
+  }
+
+  if(checked("escaramuca")){
+    extras.push("1d8");
+  }
+
+  if(checked("grande")){
+    extras.push("1d10");
+  }
+
+  if(checked("ultimo_sangue")){
+    extras.push(`${base[1]} (extra)`);
+  }
+
+  let extrasTxt = extras.length ? " + " + extras.join(" + ") : "";
 
   document.getElementById("preview_roll").innerText =
     `1d20 + ${atk} | Crit ${margemFinal()}+`;
 
   document.getElementById("preview_dmg").innerText =
-    `${base[0]}d${base[1]} x${arma.mult} + ${bonusDano}
+    `${base[0]}d${base[1]} x${arma.mult} + ${bonusDano}${extrasTxt}
      | Crit ${crit[0]}d${crit[1]}`;
 }
 
-// ---------- ROLL ----------
+// ROLL
 function rolar(){
   let atkTotal = modCombate()
     + num("atk_bonus") - num("atk_pen")
@@ -167,45 +181,38 @@ function rolar(){
     dano *= arma.mult;
   }
 
-  let marca = 0;
-  if(checked("marca")){
-    marca += rolarDado(8);
-    if(checked("monstro")) marca += rolarDado(8);
-  }
-
+  let marca = checked("marca") ? rolarDado(8) + (checked("monstro") ? rolarDado(8) : 0) : 0;
+  let escaramuca = checked("escaramuca") ? rolarDado(8) : 0;
   let grande = checked("grande") ? rolarDado(10) : 0;
   let ultimo = checked("ultimo_sangue") ? rolarDado(faces) : 0;
 
-  let bonus =
-    num("dmg_bonus") + num("mod") - num("dmg_pen");
+  let bonus = num("dmg_bonus") + num("mod") - num("dmg_pen");
 
-  let total = dano + marca + grande + ultimo + bonus;
+  let total = dano + marca + escaramuca + grande + ultimo + bonus;
 
   let detalhes = `
 d20: ${d20}
-Ataque Total: ${atkTotal}
+Ataque: ${ataque}
 
-Dano Base: ${dados}d${faces} ${critico ? "x"+arma.mult : ""}
+Base: ${dados}d${faces} ${critico ? "x"+arma.mult : ""}
 Marca: ${marca}
+Escaramuça: ${escaramuca}
 Grande: ${grande}
-Último Sangue: ${ultimo}
+Último: ${ultimo}
 
 Bônus: ${bonus}
-
 TOTAL: ${total}
 `;
 
   addHistorico(ataque, total, critico, detalhes);
 }
 
-// ---------- HISTÓRICO ----------
+// HISTÓRICO
 function addHistorico(atk, dmg, crit, detalhesTxt){
   let container = document.createElement("div");
   container.className = "roll-container";
-
   if(crit) container.classList.add("crit");
 
-  // HEADER
   let header = document.createElement("div");
   header.className = "roll";
 
@@ -219,7 +226,6 @@ function addHistorico(atk, dmg, crit, detalhesTxt){
   header.appendChild(left);
   header.appendChild(chk);
 
-  // DETALHES
   let detalhes = document.createElement("div");
   detalhes.className = "detalhes";
   detalhes.innerText = detalhesTxt;
