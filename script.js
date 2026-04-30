@@ -31,7 +31,7 @@ function mediaDado(qtd, faces){
   return qtd * (faces + 1) / 2;
 }
 
-// 🔥 aplica passo em QUALQUER dado
+// aplica passo em QUALQUER dado
 function aplicarPasso(dados, faces, passos){
   let idx = PASSOS.findIndex(p => p[0] === dados && p[1] === faces);
   idx = Math.max(0, Math.min(idx + passos, PASSOS.length-1));
@@ -266,18 +266,51 @@ function rolar(){
 // ---------- HISTÓRICO ----------
 function addHistorico(atk, dmg, crit){
 
-  let div = document.createElement("div");
-  div.className = "roll";
-  if(crit) div.classList.add("crit");
+  let container = document.createElement("div");
+  container.className = "roll-container";
+  if(crit) container.classList.add("crit");
+
+  // ===== HEADER =====
+  let header = document.createElement("div");
+  header.className = "roll";
+
+  let left = document.createElement("div");
+  left.innerText = `▶ ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
 
   let chk = document.createElement("input");
   chk.type = "checkbox";
+  chk.onclick = (e) => e.stopPropagation(); // 🔥 impede abrir ao clicar checkbox
   chk.onchange = atualizarTotal;
 
-  div.innerHTML = `ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
-  div.appendChild(chk);
+  header.appendChild(left);
+  header.appendChild(chk);
 
-  document.getElementById("historico").prepend(div);
+  // ===== DETALHES =====
+  let detalhes = document.createElement("div");
+  detalhes.className = "detalhes";
+  detalhes.style.display = "none";
+
+  detalhes.innerText = `
+Ataque: ${atk}
+Dano Total: ${dmg}
+Crítico: ${crit ? "Sim" : "Não"}
+  `;
+
+  // ===== TOGGLE =====
+  header.onclick = () => {
+    let aberto = detalhes.style.display === "block";
+
+    detalhes.style.display = aberto ? "none" : "block";
+
+    left.innerText =
+      `${aberto ? "▶" : "▼"} ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
+  };
+
+  // ===== MONTAGEM =====
+  container.appendChild(header);
+  container.appendChild(detalhes);
+
+  document.getElementById("historico").prepend(container);
 
   rolls.push({chk, dmg});
 }
