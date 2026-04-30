@@ -207,3 +207,39 @@ button[onclick="rolar()"]:hover {
   font-weight: bold;
   color: #4fc1ff;
 }
+
+.roll-container {
+  border: 1px solid #3c3c3c;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* HEADER */
+.roll {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  cursor: pointer;
+  background: #1e1e1e;
+}
+
+/* DETALHES */
+.detalhes {
+  padding: 8px;
+  background: #252526;
+  font-size: 12px;
+  white-space: pre-line;
+  border-top: 1px solid #3c3c3c;
+}
+
+/* CRÍTICO */
+.roll-container.crit .roll {
+  background: #5a0000;
+  color: #fff;
+  font-weight: bold;
+}
+
+.roll-container.crit .detalhes {
+  background: #3a0000;
+}
