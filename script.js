@@ -66,13 +66,14 @@ document.addEventListener("DOMContentLoaded", () => {
     el.addEventListener("input", atualizarPreview);
   });
 
+  // clicar no texto marca checkbox
   document.querySelectorAll(".condicoes span").forEach(span=>{
-  span.onclick = () => {
-    const input = span.previousElementSibling;
-    input.checked = !input.checked;
-    input.dispatchEvent(new Event("input"));
-  };
-});
+    span.onclick = () => {
+      const input = span.previousElementSibling;
+      input.checked = !input.checked;
+      input.dispatchEvent(new Event("input"));
+    };
+  });
 
   atualizarPreview();
 });
@@ -180,13 +181,31 @@ function rolar(){
 
   let total = dano + marca + grande + ultimo + bonus;
 
- function addHistorico(atk, dmg, crit, detalhesTxt){
+  let detalhes = `
+d20: ${d20}
+Ataque Total: ${atkTotal}
+
+Dano Base: ${dados}d${faces} ${critico ? "x"+arma.mult : ""}
+Marca: ${marca}
+Grande: ${grande}
+Último Sangue: ${ultimo}
+
+Bônus: ${bonus}
+
+TOTAL: ${total}
+`;
+
+  addHistorico(ataque, total, critico, detalhes);
+}
+
+// ---------- HISTÓRICO ----------
+function addHistorico(atk, dmg, crit, detalhesTxt){
   let container = document.createElement("div");
   container.className = "roll-container";
 
   if(crit) container.classList.add("crit");
 
-  // ===== HEADER =====
+  // HEADER
   let header = document.createElement("div");
   header.className = "roll";
 
@@ -200,24 +219,12 @@ function rolar(){
   header.appendChild(left);
   header.appendChild(chk);
 
-  // ===== DETALHES =====
-  let detalhes = `
-  d20: ${d20}
-  Ataque Total: ${atkTotal}
-  
-  Dano Base: ${dados}d${faces} ${critico ? "x"+arma.mult : ""}
-  Marca: ${marca}
-  Grande: ${grande}
-  Último Sangue: ${ultimo}
-  
-  Bônus: ${bonus}
-  
-  TOTAL: ${total}
-  `;
-  
-  addHistorico(ataque, total, critico, detalhes);
+  // DETALHES
+  let detalhes = document.createElement("div");
+  detalhes.className = "detalhes";
+  detalhes.innerText = detalhesTxt;
+  detalhes.style.display = "none";
 
-  // toggle
   header.onclick = () => {
     let aberto = detalhes.style.display === "block";
     detalhes.style.display = aberto ? "none" : "block";
@@ -229,24 +236,6 @@ function rolar(){
   container.appendChild(detalhes);
 
   document.getElementById("historico").prepend(container);
-
-  rolls.push({chk, dmg});
-}
-
-// ---------- HISTÓRICO ----------
-function addHistorico(atk, dmg, crit){
-  let div = document.createElement("div");
-  div.className = "roll";
-  if(crit) div.classList.add("crit");
-
-  let chk = document.createElement("input");
-  chk.type = "checkbox";
-  chk.onchange = atualizarTotal;
-
-  div.innerHTML = `ATK ${atk} | DMG ${dmg} ${crit ? "💥":""}`;
-  div.appendChild(chk);
-
-  document.getElementById("historico").prepend(div);
 
   rolls.push({chk, dmg});
 }
