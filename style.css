@@ -131,6 +131,11 @@ select:focus {
   color: #ddd;
 }
 
+.condicoes span:hover {
+  color: #4da3ff;
+  cursor: pointer;
+}
+
 /* ===== PASSO ===== */
 #passo_val {
   display: inline-block;
