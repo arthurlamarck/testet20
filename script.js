@@ -118,10 +118,10 @@ function atualizarPreview(){
     addExtra("Último Sangue",[1,face]);
   }
 
-  document.getElementById("preview_roll").innerText =
+  document.getElementById("preview_roll").Text =
     `1d20 + ${atk} | Crit ${margemFinal()}+`;
 
-  document.getElementById("preview_dmg").innerText =
+  document.getElementById("preview_dmg").Text =
 `Dano: ${base[0]}d${base[1]} x${arma.mult}
 Crit: ${crit[0]}d${crit[1]}
 
@@ -203,7 +203,7 @@ function addHistorico(atk,dmg,crit,fail,txt){
   chk.onchange = atualizarTotal;
 
   let t = document.createElement("div");
-  t.innerText = `▶ ATK ${atk} | DMG ${dmg}`;
+  t.Text = `▶ ATK ${atk} | DMG ${dmg}`;
 
   h.appendChild(chk);
   h.appendChild(t);
@@ -216,7 +216,7 @@ function addHistorico(atk,dmg,crit,fail,txt){
   h.onclick=()=>{
     let open = d.style.display==="block";
     d.style.display = open?"none":"block";
-    t.innerText = `${open?"▶":"▼"} ATK ${atk} | DMG ${dmg}`;
+    t.innerHTML = `${open?"▶":"▼"} ATK ${atk} <span>| DMG ${dmg}</span>`;
   };
 
   c.appendChild(h);
