@@ -1,25 +1,14 @@
-/* ===== RESET ===== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* ===== BODY ===== */
 body {
-  font-family: "Segoe UI", Consolas, monospace;
-  font-size: 13px;
+  font-family: Consolas, monospace;
   background: #1e1e1e;
   color: #ddd;
 }
 
-/* ===== APP LAYOUT ===== */
 .app {
   display: flex;
   height: 100vh;
 }
 
-/* ===== LEFT PANEL ===== */
 .left {
   width: 260px;
   padding: 10px;
@@ -27,328 +16,126 @@ body {
   flex-direction: column;
   gap: 8px;
   background: #252526;
-  border-right: 1px solid #333;
 }
 
-/* ===== RIGHT PANEL ===== */
 .right {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
 }
 
-/* ===== BOXES ===== */
 .box {
   background: #2d2d30;
-  border: 1px solid #3c3c3c;
-  border-radius: 6px;
   padding: 10px;
+  border-radius: 6px;
 }
 
-/* ===== TITLES ===== */
-.box h3 {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #4fc1ff;
-  letter-spacing: 0.5px;
-}
-
-/* ===== LABELS ===== */
-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  margin-bottom: 5px;
-}
-
-/* ===== CHECKBOX ===== */
-input[type="checkbox"] {
-  accent-color: #0e639c;
-  transform: scale(0.9);
-  margin-right: 6px;
-}
-
-/* ===== INPUTS ===== */
-input,
-select {
-  width: 100%;
-  height: 24px;
-  padding: 2px 6px;
-  background: #1e1e1e;
-  border: 1px solid #3c3c3c;
-  color: #ddd;
-  border-radius: 4px;
-  font-size: 13px;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  border-color: #4fc1ff;
-}
-
-/* ===== BONUS ROW ===== */
 .row {
   display: flex;
-  align-items: center;
   gap: 6px;
   margin-bottom: 6px;
-}
-
-.row span {
-  width: 55px;
-  font-size: 12px;
-  color: #ccc;
 }
 
 .row input {
   width: 50px;
 }
 
-/* ===== CONDIÇÕES ===== */
 .condicoes {
   display: grid;
   grid-template-columns: 18px auto;
-  gap: 8px 10px;
-  align-items: center;
+  gap: 6px;
 }
 
-.condicoes label {
-  display: contents;
-}
-
-/* checkbox */
-.condicoes input[type="checkbox"] {
-  margin: 0;
+.condicoes input {
   justify-self: center;
 }
 
-/* texto */
 .condicoes span {
-  font-size: 13px;
-  color: #ddd;
-}
-
-.condicoes span:hover {
-  color: #4da3ff;
   cursor: pointer;
 }
 
-/* ===== PASSO ===== */
-#passo_val {
-  display: inline-block;
-  width: 20px;
-  text-align: center;
-  font-weight: bold;
-}
-
-/* ===== BOTÕES ===== */
-button {
-  background: #3c3c3c;
-  border: none;
-  color: #ddd;
-  padding: 6px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #505050;
-}
-
-#passo-,
-#passo+ {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-}
-
-/* ===== BOTÃO ROLAR ===== */
-button[onclick="rolar()"] {
-  margin-top: 6px;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  background: #0e639c;
-}
-
-button[onclick="rolar()"]:hover {
-  background: #1177bb;
-}
-
-/* ===== PREVIEW ===== */
-#preview_roll {
-  font-size: 13px;
-  color: #4fc1ff;
-  margin-bottom: 4px;
-}
-
-#preview_dmg {
-  font-size: 13px;
-  color: #dcdcaa;
-  white-space: pre-line;
-}
-
-/* ===== HISTÓRICO ===== */
-#historico {
+.roll-area {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 10px;
+  gap: 10px;
+  align-items: center;
 }
 
-/* CONTAINER */
+button {
+  background: #0e639c;
+  color: white;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+}
+
+/* HISTÓRICO */
+
 .roll-container {
   border: 1px solid #3c3c3c;
   border-radius: 6px;
   overflow: hidden;
-  transition: all 0.15s ease;
 }
 
-/* HEADER (linha principal) */
 .roll {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
-  cursor: pointer;
+  padding: 6px;
   background: #1e1e1e;
-  font-family: Consolas, monospace;
-}
-
-/* HOVER */
-.roll:hover {
-  background: #2a2a2a;
-}
-
-/* CHECKBOX */
-.roll input {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
+  cursor: pointer;
 }
 
 .roll div {
   flex: 1;
 }
 
-.roll span {
-  opacity: 0.7;
-  font-size: 11px;
+.roll input {
+  flex-shrink: 0;
 }
 
-/* DETALHES (expandido) */
+/* CORES */
+.roll-container.crit .roll {
+  background: #0f5a1f;
+  color: #00ff88;
+}
+
+.roll-container.fail .roll {
+  background: #5a0000;
+  color: #ff4d4d;
+}
+
 .detalhes {
   padding: 8px;
   background: #252526;
-  font-size: 12px;
   white-space: pre-line;
-  border-top: 1px solid #3c3c3c;
-
-  animation: expandFade 0.2s ease;
 }
 
-/* CRÍTICO*/
-.roll-container.crit .roll {
-  background: #0f5a1f;
-  border-color: #00ff88;
-  color: #00ff88;
-  font-weight: bold;
-}
-
-.roll-container.crit .detalhes {
-  background: #0a3a16;
-}
-
-/* FALHA CRÍTICA */
-.roll-container.fail .roll {
-  background: #5a0000;
-  border-color: #ff4d4d;
-  color: #ff4d4d;
-  font-weight: bold;
-}
-
-.roll-container.fail .detalhes {
-  background: #3a0000;
-}
-
-/* ===== TOTAL ===== */
-#total {
-  font-size: 14px;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #4fc1ff;
-}
-
-/* ===== ANIMAÇÃO ===== */
-@keyframes expandFade {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== ROLL AREA ===== */
-.roll-area {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* ===== DADO ===== */
-#diceBox {
-  width: 60px;
-  height: 60px;
-  perspective: 600px;
-}
+/* DADO */
 
 .dice {
-  width: 100%;
-  height: 100%;
+  width: 60px;
+  height: 60px;
   background: #2d2d30;
-  border: 2px solid #3c3c3c;
-  border-radius: 12px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-weight: bold;
-  font-size: 18px;
-
-  transition: transform 0.6s ease-out, background 0.3s;
+  border-radius: 10px;
+  font-size: 20px;
 }
 
-/* número */
-#diceValue {
-  font-family: Consolas, monospace;
-}
-
-/* estados */
 .dice.rolling {
-  animation: spinDice 0.6s linear;
+  animation: spin 0.6s linear;
 }
 
 .dice.crit {
-  background: #0f5a1f;
-  border-color: #00ff88;
   color: #00ff88;
 }
 
 .dice.fail {
-  background: #5a0000;
-  border-color: #ff4d4d;
   color: #ff4d4d;
 }
 
-/* animação */
-@keyframes spinDice {
-  0%   { transform: rotateX(0) rotateY(0); }
-  50%  { transform: rotateX(180deg) rotateY(180deg); }
-  100% { transform: rotateX(360deg) rotateY(360deg); }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
