@@ -259,9 +259,17 @@ function addHistorico(atk,dmg,crit,fail,detalhesTxt){
   let chk = document.createElement("input");
   chk.type = "checkbox";
   chk.onchange = atualizarTotal;
-
+  
+  // NÃO EXPANDIR AO CLICAR CHECKBOX
+  chk.onclick = (e) => {
+    e.stopPropagation();
+  };
+  
   let text = document.createElement("div");
-  text.innerText = `▶ ATK ${atk} | DMG ${dmg} ${crit?"💥":fail?"💀":""}`;
+  text.className = "roll-text";
+  
+  text.innerText =
+  `▶ ATK ${atk} | DMG ${dmg} ${crit?"💥":fail?"💀":""}`;
 
   header.appendChild(chk);
   header.appendChild(text);
